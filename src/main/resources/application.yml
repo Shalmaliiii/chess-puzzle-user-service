@@ -13,7 +13,7 @@ spring:
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
       properties:
-        spring.json.trusted.packages: "*"
+        spring.json.trusted.packages: "com.puzzlegenerator.chess.user_service.kafka"
 
 jwt:
   secret: ${JWT_SECRET:chess-puzzle-platform-secret-key-min-256-bits-long-enough}
