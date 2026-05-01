@@ -49,12 +49,12 @@ public class UserController {
     }
 
     private String resolveUserId(Authentication authentication, HttpServletRequest request) {
+        if (authentication != null && authentication.getPrincipal() != null) {
+            return authentication.getPrincipal().toString();
+        }
         String headerUserId = request.getHeader("X-User-Id");
         if (StringUtils.hasText(headerUserId)) {
             return headerUserId;
-        }
-        if (authentication != null && authentication.getPrincipal() != null) {
-            return authentication.getPrincipal().toString();
         }
         throw new IllegalStateException("Unable to determine user identity");
     }
