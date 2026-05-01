@@ -17,7 +17,8 @@ public class RatingService {
     );
 
     public int calculateNewRating(int currentRating, String difficulty, boolean solved) {
-        int difficultyRating = DIFFICULTY_RATINGS.getOrDefault(difficulty.toUpperCase(), 1200);
+        String normalizedDifficulty = difficulty != null ? difficulty.toUpperCase() : "INTERMEDIATE";
+        int difficultyRating = DIFFICULTY_RATINGS.getOrDefault(normalizedDifficulty, 1200);
         int kFactor = getKFactor(currentRating);
 
         double expectedScore = 1.0 / (1.0 + Math.pow(10, (difficultyRating - currentRating) / 400.0));

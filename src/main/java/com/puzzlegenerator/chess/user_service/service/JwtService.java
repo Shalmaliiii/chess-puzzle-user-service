@@ -31,17 +31,37 @@ public class JwtService {
     }
 
     public String generateToken(User user) {
-        return buildToken(user, expiration);
+        return buildToken(user, expiration, "access");
     }
 
     public String generateRefreshToken(User user) {
-        return buildToken(user, refreshExpiration);
+        return buildToken(user, refreshExpiration, "refresh");
     }
 
     public boolean validateToken(String token) {
         try {
             extractClaims(token);
             return true;
+        } catch (JwtException | IllegalArgumentException e) {
+            log.warn("Invalid JWT token: {}", e.getMessage());
+            return false;
+        }
+    }
+
+    public boolean validateAccessToken(String token) {
+        try {
+            Claims claims = extractClaims(token);
+            return "access".equals(claims.get("token_type", String.class));
+        } catch (JwtException | IllegalArgumentException e) {
+            log.warn("Invalid JWT token: {}", e.getMessage());
+            return false;
+        }
+    }
+
+    public boolean validateRefreshToken(String token) {
+        try {
+            Claims claims = extractClaims(token);
+            return "refresh".equals(claims.get("token_type", String.class));
         } catch (JwtException | IllegalArgumentException e) {
             log.warn("Invalid JWT token: {}", e.getMessage());
             return false;
@@ -64,7 +84,7 @@ public class JwtService {
         return expiration;
     }
 
-    private String buildToken(User user, long expirationMs) {
+    private String buildToken(User user, long expirationMs, String tokenType) {
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + expirationMs);
 
@@ -72,6 +92,7 @@ public class JwtService {
                 .subject(user.getId())
                 .claim("username", user.getUsername())
                 .claim("role", user.getRole().name())
+                .claim("token_type", tokenType)
                 .issuedAt(now)
                 .expiration(expiryDate)
                 .signWith(secretKey)

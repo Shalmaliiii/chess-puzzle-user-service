@@ -32,6 +32,8 @@ class JwtServiceTest {
         String token = jwtService.generateToken(user);
         assertNotNull(token);
         assertTrue(jwtService.validateToken(token));
+        assertTrue(jwtService.validateAccessToken(token));
+        assertFalse(jwtService.validateRefreshToken(token));
     }
 
     @Test
@@ -60,6 +62,7 @@ class JwtServiceTest {
         assertEquals("user-789", claims.getSubject());
         assertEquals("admin", claims.get("username"));
         assertEquals("ADMIN", claims.get("role"));
+        assertEquals("access", claims.get("token_type"));
     }
 
     @Test
@@ -78,5 +81,22 @@ class JwtServiceTest {
         String refreshToken = jwtService.generateRefreshToken(user);
         assertNotNull(refreshToken);
         assertTrue(jwtService.validateToken(refreshToken));
+        assertTrue(jwtService.validateRefreshToken(refreshToken));
+        assertFalse(jwtService.validateAccessToken(refreshToken));
+    }
+
+    @Test
+    void shouldNotAcceptRefreshTokenAsAccessToken() {
+        User user = User.builder()
+                .id("user-123")
+                .username("testuser")
+                .role(UserRole.USER)
+                .build();
+
+        String refreshToken = jwtService.generateRefreshToken(user);
+        assertFalse(jwtService.validateAccessToken(refreshToken));
+
+        String accessToken = jwtService.generateToken(user);
+        assertFalse(jwtService.validateRefreshToken(accessToken));
     }
 }

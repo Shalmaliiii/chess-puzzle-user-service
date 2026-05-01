@@ -95,7 +95,7 @@ public class UserService {
     }
 
     public TokenResponse refreshToken(String refreshToken) {
-        if (!jwtService.validateToken(refreshToken)) {
+        if (!jwtService.validateRefreshToken(refreshToken)) {
             throw new InvalidCredentialsException("Invalid refresh token");
         }
 
@@ -150,6 +150,8 @@ public class UserService {
 
     public void updateUserAfterPuzzleSolve(String userId, String puzzleId, String difficulty,
                                             long timeMs, boolean correct) {
+        String normalizedDifficulty = difficulty != null ? difficulty.toUpperCase() : "INTERMEDIATE";
+
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("User not found: " + userId));
 
@@ -178,13 +180,13 @@ public class UserService {
         }
 
         DifficultyStats diffStats = stats.getByDifficulty()
-                .computeIfAbsent(difficulty.toUpperCase(), k -> new DifficultyStats());
+                .computeIfAbsent(normalizedDifficulty, k -> new DifficultyStats());
         diffStats.setAttempted(diffStats.getAttempted() + 1);
         if (correct) {
             diffStats.setSolved(diffStats.getSolved() + 1);
         }
 
-        int newRating = ratingService.calculateNewRating(user.getRating(), difficulty, correct);
+        int newRating = ratingService.calculateNewRating(user.getRating(), normalizedDifficulty, correct);
         user.setRating(newRating);
         user.setStats(stats);
 
