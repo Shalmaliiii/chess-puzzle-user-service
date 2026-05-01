@@ -36,6 +36,9 @@ public class UserController {
     @GetMapping("/leaderboard")
     public ResponseEntity<List<LeaderboardEntry>> getLeaderboard(
             @RequestParam(defaultValue = "50") int limit) {
+        if (limit < 1 || limit > 100) {
+            limit = 50;
+        }
         log.info("Leaderboard request with limit: {}", limit);
         List<LeaderboardEntry> leaderboard = userService.getLeaderboard(limit);
         return ResponseEntity.ok(leaderboard);

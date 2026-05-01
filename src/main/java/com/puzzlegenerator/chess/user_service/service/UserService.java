@@ -195,7 +195,7 @@ public class UserService {
                 .solvedAt(Instant.now())
                 .timeMs(timeMs)
                 .correct(correct)
-                .difficulty(difficulty)
+                .difficulty(normalizedDifficulty)
                 .build();
 
         List<RecentPuzzle> recentPuzzles = user.getRecentPuzzles();
