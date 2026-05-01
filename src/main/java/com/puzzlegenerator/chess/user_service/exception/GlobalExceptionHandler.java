@@ -1,6 +1,7 @@
 package com.puzzlegenerator.chess.user_service.exception;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -32,6 +33,12 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Map<String, Object>> handleInvalidCredentials(InvalidCredentialsException ex) {
         log.warn("Invalid credentials: {}", ex.getMessage());
         return buildResponse(HttpStatus.UNAUTHORIZED, ex.getMessage());
+    }
+
+    @ExceptionHandler(DuplicateKeyException.class)
+    public ResponseEntity<Map<String, Object>> handleDuplicateKey(DuplicateKeyException ex) {
+        log.warn("Duplicate key constraint: {}", ex.getMessage());
+        return buildResponse(HttpStatus.CONFLICT, "Email or username already exists");
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
