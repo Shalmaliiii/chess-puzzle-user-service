@@ -4,11 +4,9 @@ import com.puzzlegenerator.chess.user_service.dto.response.LeaderboardEntry;
 import com.puzzlegenerator.chess.user_service.dto.response.UserProfileResponse;
 import com.puzzlegenerator.chess.user_service.model.UserStats;
 import com.puzzlegenerator.chess.user_service.service.UserService;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -25,9 +23,8 @@ public class UserController {
     }
 
     @GetMapping("/me")
-    public ResponseEntity<UserProfileResponse> getCurrentUser(Authentication authentication,
-                                                               HttpServletRequest request) {
-        String userId = resolveUserId(authentication, request);
+    public ResponseEntity<UserProfileResponse> getCurrentUser(Authentication authentication) {
+        String userId = resolveUserId(authentication);
         log.info("Profile request for user: {}", userId);
         UserProfileResponse profile = userService.getUserProfile(userId);
         return ResponseEntity.ok(profile);
@@ -51,13 +48,9 @@ public class UserController {
         return ResponseEntity.ok(stats);
     }
 
-    private String resolveUserId(Authentication authentication, HttpServletRequest request) {
+    private String resolveUserId(Authentication authentication) {
         if (authentication != null && authentication.getPrincipal() != null) {
             return authentication.getPrincipal().toString();
-        }
-        String headerUserId = request.getHeader("X-User-Id");
-        if (StringUtils.hasText(headerUserId)) {
-            return headerUserId;
         }
         throw new IllegalStateException("Unable to determine user identity");
     }

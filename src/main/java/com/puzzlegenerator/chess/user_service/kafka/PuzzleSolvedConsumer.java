@@ -1,5 +1,6 @@
 package com.puzzlegenerator.chess.user_service.kafka;
 
+import com.puzzlegenerator.chess.user_service.exception.UserNotFoundException;
 import com.puzzlegenerator.chess.user_service.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -28,9 +29,13 @@ public class PuzzleSolvedConsumer {
                     event.getTimeMs(),
                     event.isCorrect()
             );
+        } catch (UserNotFoundException e) {
+            log.warn("Dropping puzzle.solved event for unknown user {}: {}",
+                    event.getUserId(), e.getMessage());
         } catch (Exception e) {
-            log.error("Failed to process puzzle.solved event for user {}: {}",
+            log.error("Transient failure processing puzzle.solved event for user {}, re-throwing for retry: {}",
                     event.getUserId(), e.getMessage(), e);
+            throw e;
         }
     }
 }

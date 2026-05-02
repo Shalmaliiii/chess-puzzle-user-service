@@ -14,24 +14,25 @@ import java.util.Map;
 @AllArgsConstructor
 public class UserStats {
 
-    @Builder.Default
-    private int totalSolved = 0;
+    private int totalSolved;
 
-    @Builder.Default
-    private int totalAttempted = 0;
+    private int totalAttempted;
 
-    @Builder.Default
-    private double accuracy = 0.0;
+    private double accuracy;
 
-    @Builder.Default
-    private int currentStreak = 0;
+    private int currentStreak;
 
-    @Builder.Default
-    private int bestStreak = 0;
+    private int bestStreak;
 
-    @Builder.Default
-    private long averageSolveTimeMs = 0;
+    private long averageSolveTimeMs;
 
     @Builder.Default
     private Map<String, DifficultyStats> byDifficulty = new HashMap<>();
+
+    public Map<String, DifficultyStats> getByDifficulty() {
+        if (byDifficulty == null) {
+            byDifficulty = new HashMap<>();
+        }
+        return byDifficulty;
+    }
 }
