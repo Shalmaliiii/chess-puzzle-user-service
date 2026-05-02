@@ -1,0 +1,16 @@
+spring:
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/chess_users_test
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration
+      - org.springframework.boot.autoconfigure.data.mongo.MongoDataAutoConfiguration
+      - org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration
+  kafka:
+    bootstrap-servers: localhost:9092
+
+jwt:
+  secret: chess-puzzle-platform-secret-key-min-256-bits-long-enough
+  expiration: 3600000
+  refresh-expiration: 604800000
